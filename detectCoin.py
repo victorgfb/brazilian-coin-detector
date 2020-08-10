@@ -5,8 +5,10 @@ from skimage.segmentation import watershed
 from scipy import ndimage
 import imutils
 
-img = cv2.imread("/home/victor/Documentos/brazilian-coin-detector/photo_2020-08-10_12-17-58.jpg")
+img = cv2.imread("/home/victor/Documentos/brazilian-coin-detector/130_1477861938.jpg")
 shifted = cv2.pyrMeanShiftFiltering(img, 21, 51)
+
+white = False
 
 save_img = img.copy()
 
@@ -25,6 +27,7 @@ print(avg_color)
 
 if(avg_color >= 100):
     gray = cv2.bitwise_not(gray)
+    white = True
 
 g = gray.copy()
 
@@ -59,21 +62,26 @@ for label in np.unique(labels)[1:]:
     y = int(y)
     r = int(r)
 
-    r+=10
+    aux = save_img
 
-    crop_img = save_img[(y -r):(y+ r), (x -r):(x+r)]
-    
     #adicionar limite caso a moeda esteja no canto.
+    # aux = cv2.bitwise_and(save_img, save_img,mask = mask)
+    
+    # if(white):
+    #     aux[mask == 0] = [255, 255, 255]
+    # else:
+    #     aux[mask == 0] = [0, 0, 0]
 
+    crop_img = aux[(y -r):(y+ r), (x -r):(x+r)]
     cv2.imwrite(str(label) + ".jpg", crop_img)
 
     cv2.circle(img, (x, y), r, (0, 255, 0), 2)
     cv2.putText(img, "#{}".format(label), (x - 10, y),cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
 
 
-cv2.imshow("teste", thr)
+cv2.imshow("teste", img)
 cv2.imshow("thr", g2)
-cv2.imshow("AND", g)
-cv2.imshow("img", img)
+cv2.imshow("AND", mask)
+cv2.imshow("img", thresh)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
