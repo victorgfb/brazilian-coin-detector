@@ -13,7 +13,7 @@ save_img = img.copy()
 gray = cv2.cvtColor( shifted, cv2.COLOR_BGR2GRAY)
 
 gray_blur = cv2.GaussianBlur(gray, (15, 15), 0)
-_,thresh = cv2.threshold(gray, 0, 255, cv2.THRESH_OTSU)
+_,thresh = cv2.threshold(gray_blur, 0, 255, cv2.THRESH_OTSU)
 
 gray = thresh
 
