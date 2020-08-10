@@ -5,7 +5,7 @@ from skimage.segmentation import watershed
 from scipy import ndimage
 import imutils
 
-img = cv2.imread("/home/victor/Documentos/contador-de-moedas/170_1479423192.jpg")
+img = cv2.imread("/home/victor/Documentos/brazilian-coin-detector/photo_2020-08-10_12-17-58.jpg")
 shifted = cv2.pyrMeanShiftFiltering(img, 21, 51)
 
 save_img = img.copy()
@@ -19,7 +19,14 @@ gray = thresh
 
 gray = cv2.GaussianBlur(gray, (9, 9),0)
 
-res = cv2.bitwise_and(img,img,mask = cv2.bitwise_not(gray))
+avg_color_per_row = np.average(gray, axis=0)
+avg_color = np.average(avg_color_per_row, axis=0)
+print(avg_color)
+
+if(avg_color >= 125):
+    gray = cv2.bitwise_not(gray)
+
+res = cv2.bitwise_and(img,img,mask = gray)
 gray = cv2.cvtColor( res, cv2.COLOR_BGR2GRAY)
 
 _,thresh = cv2.threshold(gray ,1,255,cv2.THRESH_BINARY)
@@ -45,6 +52,8 @@ for label in np.unique(labels)[1:]:
     x = int(x)
     y = int(y)
     r = int(r)
+
+    r+=5
 
     crop_img = save_img[(y -r):(y+ r), (x -r):(x+r)]
 
