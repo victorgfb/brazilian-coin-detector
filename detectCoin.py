@@ -5,7 +5,7 @@ from skimage.segmentation import watershed
 from scipy import ndimage
 import imutils
 
-img = cv2.imread("/home/victor/Documentos/brazilian-coin-detector/175_1479423504.jpg")
+img = cv2.imread("/home/victor/Documentos/brazilian-coin-detector/175_1479423564.jpg")
 shifted = cv2.pyrMeanShiftFiltering(img, 21, 51)
 
 white = False
@@ -43,12 +43,15 @@ _,thresh = cv2.threshold(gray ,1,255,cv2.THRESH_BINARY)
 
 thr = thresh.copy()
 
+#Waterhed
+
 D = ndimage.distance_transform_edt(thresh)
 localMax = peak_local_max(D, indices=False, min_distance=20,labels=thresh)
 
 markers = ndimage.label(localMax, structure=np.ones((3, 3)))[0]
 labels = watershed(-D, markers, mask=thresh)
 
+########################
 
 for label in np.unique(labels)[1:]:
     mask = np.zeros(gray.shape, dtype="uint8")
@@ -79,9 +82,9 @@ for label in np.unique(labels)[1:]:
     cv2.putText(img, u'\u0024' +  "{}".format(label), (x - 10, y),cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2)
 
 
-cv2.imshow("teste", img)
-cv2.imshow("thr", g2)
-cv2.imshow("AND", mask)
-cv2.imshow("img", thresh)
+cv2.imshow("img", img)
+# cv2.imshow("thr", g2)
+# cv2.imshow("AND", mask)
+# cv2.imshow("img", thresh)
 cv2.waitKey(0)
 cv2.destroyAllWindows()
