@@ -5,7 +5,7 @@ from skimage.segmentation import watershed
 from scipy import ndimage
 import imutils
 
-img = cv2.imread("/home/victor/Documentos/brazilian-coin-detector/130_1477861938.jpg")
+img = cv2.imread("/home/victor/Documentos/brazilian-coin-detector/175_1479423504.jpg")
 shifted = cv2.pyrMeanShiftFiltering(img, 21, 51)
 
 white = False
@@ -75,8 +75,8 @@ for label in np.unique(labels)[1:]:
     crop_img = aux[(y -r):(y+ r), (x -r):(x+r)]
     cv2.imwrite(str(label) + ".jpg", crop_img)
 
-    cv2.circle(img, (x, y), r, (0, 255, 0), 2)
-    cv2.putText(img, "#{}".format(label), (x - 10, y),cv2.FONT_HERSHEY_SIMPLEX, 0.6, (0, 0, 255), 2)
+    cv2.circle(img, (x, y), r, (255, 0, 0), 3)
+    cv2.putText(img, u'\u0024' +  "{}".format(label), (x - 10, y),cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2)
 
 
 cv2.imshow("teste", img)
