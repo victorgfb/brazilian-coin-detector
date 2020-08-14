@@ -5,7 +5,9 @@ from skimage.segmentation import watershed
 from scipy import ndimage
 import imutils
 
-img = cv2.imread("/home/victor/Documentos/brazilian-coin-detector/175_1479423564.jpg")
+# imagePaths = list(imutils.paths.list_images('classification'))
+
+img = cv2.imread("/home/victor/Documentos/brazilian-coin-detector/10_1477186332.jpg")
 shifted = cv2.pyrMeanShiftFiltering(img, 21, 51)
 
 white = False
@@ -75,8 +77,30 @@ for label in np.unique(labels)[1:]:
     # else:
     #     aux[mask == 0] = [0, 0, 0]
 
-    crop_img = aux[(y -r):(y+ r), (x -r):(x+r)]
-    cv2.imwrite(str(label) + ".jpg", crop_img)
+    limInfY = (y - r) 
+
+    if  limInfY < 0:
+        limInfY = 0
+    
+    limInfX = (x - r) 
+    
+    if limInfX < 0: 
+        limInfX = 0
+
+    limSupY = y + r
+    
+    if (limSupY > int(img.shape[0])):
+        limSupY = int(img.shape[0])
+    
+    limSupX =  x + r
+    
+    if(limSupX > int(img.shape[1])):
+        limSupX =  int(img.shape[1] )
+
+    crop_img = aux[limInfY:limSupY, limInfX:limSupX]
+    # print("entu")
+    # print(label)
+    cv2.imwrite("newDataset/" + str(label) + ".jpg", crop_img)
 
     cv2.circle(img, (x, y), r, (255, 0, 0), 3)
     cv2.putText(img, u'\u0024' +  "{}".format(label), (x - 10, y),cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2)
