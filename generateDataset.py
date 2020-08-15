@@ -28,7 +28,7 @@ for imagePath in imagePaths:
     # thresh = cv2.adaptiveThreshold(gray_blur,255,cv2.ADAPTIVE_THRESH_MEAN_C,\
     #         cv2.THRESH_BINARY,11,2)
 
-    _,thresh = cv2.threshold(gray_blur, 127, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+    _,thresh = cv2.threshold(gray_blur, 0, 255,  cv2.THRESH_OTSU)
 
     gray = thresh
 
@@ -65,60 +65,71 @@ for imagePath in imagePaths:
     labels = watershed(-D, markers, mask=thresh)
 
     ########################
-    # label = np.unique(labels)[1:][0]
+    label = np.unique(labels)[1:]
 
-    for label in np.unique(labels)[1:]:
+    if(len(label) <= 0):
+        continue
 
-        mask = np.zeros(gray.shape, dtype="uint8")
-        mask[labels == label] = 255
-        cnts = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-        cnts = imutils.grab_contours(cnts)
-        c = max(cnts, key=cv2.contourArea)
-        ((x, y), r) = cv2.minEnclosingCircle(c)
+    label = label[0]
+    # for label in np.unique(labels)[1:]:
 
-        x = int(x)
-        y = int(y)
-        r = int(r)
+    mask = np.zeros(gray.shape, dtype="uint8")
+    mask[labels == label] = 255
+    cnts = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    cnts = imutils.grab_contours(cnts)
+    c = max(cnts, key=cv2.contourArea)
+    ((x, y), r) = cv2.minEnclosingCircle(c)
 
-        aux = save_img.copy()
+    x = int(x)
+    y = int(y)
+    r = int(r)
 
-        #adicionar limite caso a moeda esteja no canto.
-        # aux = cv2.bitwise_and(save_img, save_img,mask = mask)
-        
-        # if(white):
-        #     aux[mask == 0] = [255, 255, 255]
-        # else:
-        #     aux[mask == 0] = [0, 0, 0]
+    aux = save_img.copy()
 
-        
-        limInfY = (y - r) 
+    #adicionar limite caso a moeda esteja no canto.
+    # aux = cv2.bitwise_and(save_img, save_img,mask = mask)
+    
+    # if(white):
+    #     aux[mask == 0] = [255, 255, 255]
+    # else:
+    #     aux[mask == 0] = [0, 0, 0]
 
-        if  limInfY < 0:
-            limInfY = 0
-        
-        limInfX = (x - r) 
-        
-        if limInfX < 0: 
-            limInfX = 0
+    
+    limInfY = (y - r) 
 
-        limSupY = y + r
-        
-        if (limSupY > int(img.shape[0])):
-            limSupY = int(img.shape[0])
-        
-        limSupX =  x + r
-        
-        if(limSupX > int(img.shape[1])):
-            limSupX =  int(img.shape[1] )
+    if  limInfY < 0:
+        limInfY = 0
+    
+    limInfX = (x - r) 
+    
+    if limInfX < 0: 
+        limInfX = 0
 
-        crop_img = aux[limInfY:limSupY, limInfX:limSupX]
-        # print("entu")
+    limSupY = y + r
+    
+    if (limSupY > int(img.shape[0])):
+        limSupY = int(img.shape[0])
+    
+    limSupX =  x + r
+    
+    if(limSupX > int(img.shape[1])):
+        limSupX =  int(img.shape[1] )
 
-        cv2.imwrite("newDataset/" + imgName, crop_img)
+    crop_img = aux[limInfY:limSupY, limInfX:limSupX]
+    # print("entu")
+    # print(crop_img.shape[0])
+    # print(crop_img.shape[1])
 
+    if((int(crop_img.shape[0]) >= 200) or (int(crop_img.shape[1]) >= 200)):
+        cv2.imwrite("error/" + imgName, crop_img)
+    else:
+        if((int(crop_img.shape[0]) <= 50) or (int(crop_img.shape[1])  <= 50)):
+            cv2.imwrite("error/" + imgName, crop_img)
+        else:
+            cv2.imwrite("newDataset/" + imgName, crop_img)
 
-        cv2.circle(img, (x, y), r, (255, 0, 0), 3)
-        cv2.putText(img, u'\u0024' +  "{}".format(label), (x - 10, y),cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2)
+    # cv2.circle(img, (x, y), r, (255, 0, 0), 3)
+    # cv2.putText(img, u'\u0024' +  "{}".format(label), (x - 10, y),cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2)
 
 
         # cv2.imshow("crop", crop_img)
