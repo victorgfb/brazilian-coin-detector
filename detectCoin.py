@@ -1,4 +1,4 @@
-import cv2
+from cv2 import cv2
 import numpy as np
 from skimage.feature import peak_local_max
 from skimage.segmentation import watershed
@@ -7,7 +7,7 @@ import imutils
 
 # imagePaths = list(imutils.paths.list_images('classification'))
 
-img = cv2.imread("/home/victor/Documentos/brazilian-coin-detector/50_1477139964.jpg")
+img = cv2.imread("/home/victor/Documentos/brazilian-coin-detector/photo_2020-08-10_12-11-36.jpg")
 shifted = cv2.pyrMeanShiftFiltering(img, 21, 51)
 
 white = False
@@ -33,9 +33,9 @@ if(avg_color >= 100):
 
 g = gray.copy()
 
-res = cv2.bitwise_and(img, img,mask = gray)
+res = cv2.bitwise_and(shifted, shifted,mask = gray)
 gray = cv2.cvtColor( res, cv2.COLOR_BGR2GRAY)
-gray = cv2.GaussianBlur(gray, (9, 9), 0)
+gray = cv2.GaussianBlur(gray, (15, 15), 0)
 
 g2 = gray.copy()
 

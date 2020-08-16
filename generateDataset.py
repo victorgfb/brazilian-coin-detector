@@ -6,14 +6,27 @@ from scipy import ndimage
 import imutils
 from imutils import paths
 import os
+from tqdm import tqdm
 
 imagePaths = list(paths.list_images('classification'))
-NewDataPath = "newDataset/"
 
-for imagePath in imagePaths:
+NewDataPath = "newDataset/train/"
+
+coinTypes = [5,10,25,50,100] 
+
+for coinType in coinTypes:
+    try:
+        os.mkdir(NewDataPath + str(coinType))
+    except OSError:
+        print ("Creation of the directory ")
+    else:
+        print ("Successfully created the directory")
+
+for imagePath in tqdm(imagePaths):
 
     imgName = imagePath.split("/")[-1]
-    # print(imgName)
+    coinType = imgName.split("_")[0]
+
     img = cv2.imread(imagePath)
     shifted = cv2.pyrMeanShiftFiltering(img, 21, 51)
 
@@ -24,9 +37,6 @@ for imagePath in imagePaths:
     gray = cv2.cvtColor( shifted, cv2.COLOR_BGR2GRAY)
 
     gray_blur = cv2.GaussianBlur(gray, (15, 15), 0)
-
-    # thresh = cv2.adaptiveThreshold(gray_blur,255,cv2.ADAPTIVE_THRESH_MEAN_C,\
-    #         cv2.THRESH_BINARY,11,2)
 
     _,thresh = cv2.threshold(gray_blur, 0, 255,  cv2.THRESH_OTSU)
 
@@ -44,9 +54,9 @@ for imagePath in imagePaths:
 
     g = gray.copy()
 
-    res = cv2.bitwise_and(img, img,mask = gray)
+    res = cv2.bitwise_and(shifted, shifted,mask = gray)
     gray = cv2.cvtColor( res, cv2.COLOR_BGR2GRAY)
-    gray = cv2.GaussianBlur(gray, (9, 9), 0)
+    gray = cv2.GaussianBlur(gray, (15, 15), 0)
 
     g2 = gray.copy()
 
@@ -126,7 +136,7 @@ for imagePath in imagePaths:
         if((int(crop_img.shape[0]) <= 50) or (int(crop_img.shape[1])  <= 50)):
             cv2.imwrite("error/" + imgName, crop_img)
         else:
-            cv2.imwrite("newDataset/" + imgName, crop_img)
+            cv2.imwrite(NewDataPath + coinType + "/" + imgName, crop_img)
 
     # cv2.circle(img, (x, y), r, (255, 0, 0), 3)
     # cv2.putText(img, u'\u0024' +  "{}".format(label), (x - 10, y),cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2)
