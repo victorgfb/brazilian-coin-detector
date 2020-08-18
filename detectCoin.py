@@ -7,7 +7,7 @@ import imutils
 
 # imagePaths = list(imutils.paths.list_images('classification'))
 
-img = cv2.imread("/home/victor/Documentos/brazilian-coin-detector/photo_2020-08-10_12-11-36.jpg")
+img = cv2.imread("/home/victor/Documentos/brazilian-coin-detector/photo_2020-08-18_11-59-52.jpg")
 shifted = cv2.pyrMeanShiftFiltering(img, 21, 51)
 
 white = False
