@@ -18,7 +18,7 @@ dists = []
 
 model = tf.keras.models.load_model("/home/victor/Documentos/brazilian-coin-detector/my_model.h5")
 
-img = cv2.imread("/home/victor/Documentos/brazilian-coin-detector/175_1479423546.jpg")
+img = cv2.imread("/home/victor/Documentos/brazilian-coin-detector/10_1477288020.jpg")
 # img = cv2.imread(param)
 shifted = cv2.pyrMeanShiftFiltering(img, 21, 51)
 
