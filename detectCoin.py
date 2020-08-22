@@ -3,11 +3,23 @@ import numpy as np
 from skimage.feature import peak_local_max
 from skimage.segmentation import watershed
 from scipy import ndimage
+import tensorflow as tf
 import imutils
+from math import sqrt
+import sys
 
-# imagePaths = list(imutils.paths.list_images('classification'))
+# param = sys.argv[1:][0]
 
-img = cv2.imread("/home/victor/Documentos/brazilian-coin-detector/photo_2020-08-18_11-59-52.jpg")
+# print(param)
+
+coinsType = ['10', '100', '25', '5', '50']
+points = []
+dists = []
+
+model = tf.keras.models.load_model("/home/victor/Documentos/brazilian-coin-detector/my_model.h5")
+
+img = cv2.imread("/home/victor/Documentos/brazilian-coin-detector/175_1479423546.jpg")
+# img = cv2.imread(param)
 shifted = cv2.pyrMeanShiftFiltering(img, 21, 51)
 
 white = False
@@ -67,6 +79,20 @@ for label in np.unique(labels)[1:]:
     y = int(y)
     r = int(r)
 
+    dists = [10000]
+    for x1, y1 in points:
+        dist = sqrt((x-x1)**2 + (y-y1)**2)
+        dists.append(dist)
+        # print("min ->" + str(dist))
+        # if(dist < 200):
+    
+    # print(min(dists))
+    if(min(dists) <= 50):
+        continue
+    # print((x,y))
+    points.append((x , y))
+   
+    # print(min(p))
     aux = save_img
 
     #adicionar limite caso a moeda esteja no canto.
@@ -98,12 +124,22 @@ for label in np.unique(labels)[1:]:
         limSupX =  int(img.shape[1] )
 
     crop_img = aux[limInfY:limSupY, limInfX:limSupX]
+
+    im_rgb = cv2.cvtColor(crop_img, cv2.COLOR_BGR2RGB)
+    img_res = cv2.resize(im_rgb, (96,96))
+    norm_img = img_res/255
+
+    np_img = np.expand_dims(norm_img, axis=0)
+    pred = model.predict(np_img)
+
+    coinType = coinsType[int(np.argmax(pred))]
+    
     # print("entu")
     # print(label)
     cv2.imwrite("newDataset/" + str(label) + ".jpg", crop_img)
 
     cv2.circle(img, (x, y), r, (255, 0, 0), 3)
-    cv2.putText(img, u'\u0024' +  "{}".format(label), (x - 10, y),cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2)
+    cv2.putText(img, u'\u0024' +  "{}".format(coinType), (x - 10, y),cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2)
 
 
 cv2.imshow("img", img)
