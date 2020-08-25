@@ -8,7 +8,7 @@ import imutils
 from math import sqrt
 import sys
 
-# param = sys.argv[1:][0]
+imagePath = sys.argv[1:][0]
 
 # print(param)
 
@@ -18,8 +18,8 @@ dists = []
 
 model = tf.keras.models.load_model("/home/victor/Documentos/brazilian-coin-detector/my_model.h5")
 
-img = cv2.imread("/home/victor/Documentos/brazilian-coin-detector/photo_2020-08-22_22-42-17.jpg")
-# img = cv2.imread(param)
+# img = cv2.imread("/home/victor/Documentos/brazilian-coin-detector/photo_2020-08-22_22-42-17.jpg")
+img = cv2.imread(imagePath)
 shifted = cv2.pyrMeanShiftFiltering(img, 21, 51)
 
 white = False
